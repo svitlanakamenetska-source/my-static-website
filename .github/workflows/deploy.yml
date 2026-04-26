@@ -1,0 +1,31 @@
+name: Deploy to S3
+
+on:
+  push:
+    branches:
+      - main   # Кожен раз, коли пушимо в основну гілку
+  pull_request:
+    branches:
+      - main   # Також при створенні pull request на основну гілку (опціонально)
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest   # Запуск на Ubuntu сервері
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2   # Завантажуємо репозиторій
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v1   # Налаштовуємо AWS доступ
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Беремо секрети з GitHub Secrets
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: 'eu-west-1'   # Твій AWS регіон
+
+    - name: Sync website files to S3
+      run: |
+        aws s3 sync ./ s3://YOUR-BUCKET-NAME --delete --acl public-read  # Заміни YOUR-BUCKET-NAME на твоє ім'я бакету
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
