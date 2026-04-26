@@ -3,29 +3,29 @@ name: Deploy to S3
 on:
   push:
     branches:
-      - main   # Кожен раз, коли пушимо в основну гілку
-  pull_request:
-    branches:
-      - main   # Також при створенні pull request на основну гілку (опціонально)
+      - main   # Запускає деплой при кожному пуші в гілку main
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest   # Запуск на Ubuntu сервері
+    runs-on: ubuntu-latest   # Вибір середовища для пайплайна (Ubuntu)
 
     steps:
+    # Крок 1: Checkout коду з репозиторію
     - name: Checkout code
-      uses: actions/checkout@v2   # Завантажуємо репозиторій
+      uses: actions/checkout@v3   # Оновлена версія для клонування репозиторію
 
+    # Крок 2: Налаштування AWS CLI
     - name: Set up AWS CLI
-      uses: aws-actions/configure-aws-credentials@v1   # Налаштовуємо AWS доступ
+      uses: aws-actions/configure-aws-credentials@v2   # Оновлена версія для налаштування AWS
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}  # Беремо секрети з GitHub Secrets
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}   # Використовуємо секрети GitHub для доступу до AWS
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: 'eu-west-1'   # Твій AWS регіон
+        aws-region: 'eu-west-1'  # Твій AWS регіон (Ireland)
 
+    # Крок 3: Синхронізація файлів з репозиторію в S3 бакет
     - name: Sync website files to S3
       run: |
-        aws s3 sync ./ s3://cmtr-hv21yilu-bucket-1777194647 --delete --acl public-read  # Заміни YOUR-BUCKET-NAME на твоє ім'я бакету
+        aws s3 sync ./ s3://cmtr-hv21yilu-bucket-1777194647 --delete --acl public-read  # Замінити на свій бакет
       env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}   # Використовуємо секрети
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
