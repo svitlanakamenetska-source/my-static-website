@@ -25,7 +25,7 @@ jobs:
 
     - name: Sync website files to S3
       run: |
-        aws s3 sync ./ s3://YOUR-BUCKET-NAME --delete --acl public-read  # Заміни YOUR-BUCKET-NAME на твоє ім'я бакету
+        aws s3 sync ./ s3://cmtr-hv21yilu-bucket-1777194647 --delete --acl public-read  # Заміни YOUR-BUCKET-NAME на твоє ім'я бакету
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
